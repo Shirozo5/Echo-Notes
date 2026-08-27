@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Echo Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-900:#0B1E29;
+    --ink-850:#0E2731;
+    --ink-800:#12313C;
+    --paper:#F4EFE3;
+    --paper-dim:#C9C2B0;
+    --paper-faint:#8FA0A6;
+    --gold:#D4A24C;
+    --cyan:#6FC7C3;
+    --line:rgba(244,239,227,0.12);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ background:var(--ink-900); }
+  body{
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    background:var(--ink-900);
+    color:var(--paper);
+  }
+
+  .wrap{ max-width:980px; margin:0 auto; padding:0 48px; }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px; letter-spacing:0.22em; font-weight:500;
+    color:var(--cyan);
+    text-transform:uppercase;
+    display:flex; align-items:center; gap:12px;
+  }
+  .eyebrow .dot{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--gold);
+    box-shadow:0 0 0 4px rgba(212,162,76,0.18), 0 0 0 9px rgba(212,162,76,0.08);
+  }
+  h2{
+    font-family:'Source Serif 4', serif;
+    font-weight:600;
+    font-size:38px;
+    letter-spacing:-0.01em;
+    color:var(--paper);
+    margin-top:14px;
+  }
+  .lede{
+    margin-top:14px;
+    max-width:640px;
+    font-size:18px;
+    line-height:1.65;
+    color:var(--paper-dim);
+  }
+
+  /* ---------- hero / banner ---------- */
+  .banner{
+    position:relative;
+    width:100%; height:500px;
+    background:
+      radial-gradient(1100px 500px at 82% 8%, rgba(111,199,195,0.10), transparent 60%),
+      linear-gradient(135deg, var(--ink-900) 0%, var(--ink-800) 100%);
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+  }
+  .grain{
+    position:absolute; inset:0;
+    background-image: repeating-linear-gradient(0deg, rgba(244,239,227,0.025) 0px, rgba(244,239,227,0.025) 1px, transparent 1px, transparent 34px);
+    pointer-events:none;
+  }
+  .banner .content{
+    position:relative; z-index:2; height:100%;
+    padding:64px 72px 48px 76px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .banner h1{
+    font-family:'Source Serif 4', serif;
+    font-weight:600;
+    font-size:104px;
+    line-height:0.96;
+    color:var(--paper);
+    letter-spacing:-0.01em;
+    margin-top:22px;
+  }
+  .banner h1 .echo-o{ position:relative; display:inline-block; }
+  .banner h1 .echo-o svg{
+    position:absolute; left:50%; top:50%;
+    transform:translate(-50%,-50%);
+    width:190%; height:190%;
+    overflow:visible; pointer-events:none;
+  }
+  .banner .subtitle{
+    margin-top:18px; max-width:740px;
+    font-size:21px; line-height:1.5; color:var(--paper-dim);
+  }
+  .banner .subtitle strong{ color:var(--paper); font-weight:500; }
+  .wave-zone{ position:relative; height:90px; margin-top:6px; display:flex; align-items:flex-end; }
+  #wavesvg{ width:100%; height:100%; overflow:visible; }
+  .footer-row{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    border-top:1px solid var(--line); padding-top:20px;
+  }
+  .footer-row .institution{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; letter-spacing:0.06em;
+    color:var(--paper-dim); line-height:1.6;
+  }
+  .footer-row .institution b{ color:var(--paper); font-weight:500; }
+  .credit{ text-align:right; }
+  .credit .label{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.2em; font-weight:500;
+    color:var(--gold); text-transform:uppercase;
+  }
+  .credit .name{
+    margin-top:6px; font-family:'Source Serif 4', serif; font-weight:600; font-size:26px; color:var(--paper);
+  }
+
+  /* ---------- sections ---------- */
+  section{ padding:80px 0; border-bottom:1px solid var(--line); }
+  section:last-of-type{ border-bottom:none; }
+  .section-alt{ background:var(--ink-850); }
+
+  /* stat chips (introduction) */
+  .stat-row{ margin-top:40px; display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .stat{ background:var(--ink-900); padding:26px 22px; }
+  .stat .num{ font-family:'Source Serif 4', serif; font-size:15px; font-weight:600; color:var(--gold); }
+  .stat p{ margin-top:8px; font-size:13.5px; line-height:1.5; color:var(--paper-dim); }
+
+  /* objectives */
+  .obj-list{ margin-top:40px; display:grid; grid-template-columns:1fr 1fr; gap:16px 32px; }
+  .obj{ display:flex; gap:14px; align-items:flex-start; }
+  .obj .tick{
+    flex:none; width:22px; height:22px; border-radius:50%;
+    border:1px solid var(--cyan); color:var(--cyan);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size:12px; margin-top:2px;
+  }
+  .obj p{ font-size:15.5px; line-height:1.55; color:var(--paper-dim); }
+
+  /* architecture */
+  .arch-grid{ margin-top:44px; display:grid; grid-template-columns:1fr 1fr; gap:32px; }
+  .arch-col .k{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.14em;
+    color:var(--paper-faint); text-transform:uppercase; margin-bottom:16px; display:block;
+  }
+  .pipe{ border:1px solid var(--line); }
+  .pipe-step{
+    padding:13px 18px; font-size:14.5px; color:var(--paper-dim);
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:center; gap:10px;
+  }
+  .pipe-step:last-child{ border-bottom:none; }
+  .pipe-step .b{ width:5px; height:5px; border-radius:50%; background:var(--gold); flex:none; }
+  .arch-col.ai .pipe-step .b{ background:var(--cyan); }
+
+  /* methodology (steps) */
+  .steps{ margin-top:56px; position:relative; }
+  .steps::before{
+    content:''; position:absolute; left:23px; top:10px; bottom:10px; width:1px;
+    background:linear-gradient(180deg, var(--cyan), var(--gold));
+    opacity:0.4;
+  }
+  .step{ position:relative; padding-left:70px; margin-bottom:40px; }
+  .step:last-child{ margin-bottom:0; }
+  .step .numc{
+    position:absolute; left:0; top:0; width:48px; height:48px;
+    border-radius:50%; border:1px solid var(--line);
+    background:var(--ink-900);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size:15px; color:var(--gold);
+  }
+  .step h3{ font-family:'Source Serif 4', serif; font-weight:600; font-size:22px; color:var(--paper); }
+  .step p{ margin-top:8px; font-size:16px; line-height:1.6; color:var(--paper-dim); max-width:600px; }
+
+  /* features */
+  .feature-grid{ margin-top:48px; display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .feature{ background:var(--ink-900); padding:30px 28px; }
+  .section-alt .feature{ background:var(--ink-850); }
+  .feature .mark{
+    width:34px; height:34px; border-radius:50%;
+    background:rgba(111,199,195,0.10); border:1px solid rgba(111,199,195,0.35);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--cyan);
+  }
+  .feature h3{ margin-top:18px; font-family:'Source Serif 4', serif; font-weight:600; font-size:19px; color:var(--paper); }
+  .feature p{ margin-top:10px; font-size:14.5px; line-height:1.6; color:var(--paper-dim); }
+
+  /* audience / modules */
+  .audience-grid{ margin-top:48px; display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+  .audience-card{ border-top:2px solid var(--gold); padding-top:20px; }
+  .audience-card h3{ font-family:'Source Serif 4', serif; font-weight:600; font-size:21px; color:var(--paper); }
+  .audience-card p{ margin-top:10px; font-size:15px; line-height:1.6; color:var(--paper-dim); }
+  .audience-card ul{ margin-top:12px; padding-left:0; list-style:none; }
+  .audience-card li{
+    font-size:13.5px; color:var(--paper-faint); padding:6px 0;
+    border-top:1px solid var(--line);
+    font-family:'IBM Plex Mono', monospace;
+  }
+
+  /* built with */
+  .stack-row{ margin-top:36px; display:flex; flex-wrap:wrap; gap:12px; }
+  .chip{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; letter-spacing:0.04em;
+    color:var(--paper-dim);
+    border:1px solid var(--line); border-radius:20px;
+    padding:9px 18px;
+  }
+  .chip b{ color:var(--cyan); font-weight:500; }
+
+  /* system requirements */
+  .req-grid{ margin-top:40px; display:grid; grid-template-columns:1fr 1fr; gap:32px; }
+  .req-col .k{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.14em;
+    color:var(--paper-faint); text-transform:uppercase; margin-bottom:14px; display:block;
+  }
+  .req-col ul{ list-style:none; }
+  .req-col li{ font-size:15px; color:var(--paper-dim); padding:9px 0; border-bottom:1px solid var(--line); }
+  .req-col li:last-child{ border-bottom:none; }
+  .req-col li b{ color:var(--paper); font-weight:500; }
+
+  /* advantages / future work */
+  .two-col{ margin-top:44px; display:grid; grid-template-columns:1fr 1fr; gap:48px; }
+  .two-col h3{ font-family:'Source Serif 4', serif; font-weight:600; font-size:20px; color:var(--paper); margin-bottom:16px; }
+  .two-col ul{ list-style:none; }
+  .two-col li{
+    font-size:15px; line-height:1.6; color:var(--paper-dim); padding:9px 0 9px 22px; position:relative;
+  }
+  .two-col li::before{
+    content:''; position:absolute; left:0; top:16px; width:6px; height:6px; border-radius:50%;
+  }
+  .adv li::before{ background:var(--gold); }
+  .fut li::before{ background:var(--cyan); }
+
+  /* conclusion */
+  .conclusion-box{
+    margin-top:36px; border:1px solid var(--line); border-left:2px solid var(--gold);
+    padding:28px 32px; background:rgba(244,239,227,0.02);
+  }
+  .conclusion-box p{ font-size:17px; line-height:1.7; color:var(--paper-dim); max-width:760px; }
+
+  /* closing footer */
+  .closer{ padding:56px 0; text-align:center; }
+  .closer .name{ font-family:'Source Serif 4', serif; font-weight:600; font-size:20px; color:var(--paper); }
+  .closer .role{
+    margin-top:6px; font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.14em;
+    color:var(--paper-faint); text-transform:uppercase;
+  }
+  .closer .sup{ margin-top:18px; font-size:12.5px; color:var(--paper-faint); }
+
+  @media (max-width:720px){
+    .problem-grid, .obj-list, .arch-grid, .feature-grid, .audience-grid, .req-grid, .two-col, .stat-row{ grid-template-columns:1fr; }
+    .banner h1{ font-size:64px; }
+    .banner .subtitle{ font-size:17px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HERO / BANNER -->
+  <div class="banner" id="banner">
+    <div class="grain"></div>
+    <div class="content">
+      <div>
+        <div class="eyebrow"><span class="dot"></span>Final Year Thesis &nbsp;·&nbsp; BS Software Engineering</div>
+        <h1>Ech<span class="echo-o">o<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="#6FC7C3" stroke-opacity="0.35" stroke-width="1.5"/><circle cx="50" cy="50" r="38" fill="none" stroke="#6FC7C3" stroke-opacity="0.22" stroke-width="1.5"/></svg></span> Notes</h1>
+        <div class="subtitle">An <strong>AI-powered academic meeting transcription</strong> and <strong>document generation system</strong> — turning spoken research discussions into structured academic writing.</div>
+      </div>
+      <div>
+        <div class="wave-zone"><svg id="wavesvg" preserveAspectRatio="none" viewBox="0 0 1452 90"></svg></div>
+        <div class="footer-row">
+          <div class="institution">Department of Software Engineering<br><b>Hazara University, Mansehra</b></div>
+          <div class="credit">
+            <div class="label">Submitted by</div>
+            <div class="name">Muhammad Abdullah</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTRODUCTION -->
+  <section>
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span>Introduction</div>
+      <h2>Meeting notes shouldn't be the hardest part of research.</h2>
+      <p class="lede">Academic meetings are usually recorded manually, making documentation time-consuming and error-prone. Echo Notes automates meeting transcription, speaker identification, AI-assisted document generation, and project management using modern AI technologies.</p>
+      <div class="stat-row">
+        <div class="stat"><div class="num">Saves time</div><p>Cuts out manual note-taking during and after every meeting.</p></div>
+        <div class="stat"><div class="num">Improves accuracy</div><p>Reduces the errors that creep into hand-written documentation.</p></div>
+        <div class="stat"><div class="num">Generates drafts</div><p>Turns transcripts into FYP documents automatically.</p></div>
+        <div class="stat"><div class="num">Supports both sides</div><p>Built for supervisors and students alike, not just one role.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEARCH OBJECTIVES -->
+  <section class="section-alt">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span>Research objectives</div>
+      <h2>What the project set out to do.</h2>
+      <div class="obj-list">
+        <div class="obj"><div class="tick">✓</div><p>Convert meeting audio into accurate text.</p></div>
+        <div class="obj"><div class="tick">✓</div><p>Identify different speakers within a single recording.</p></div>
+        <div class="obj"><div class="tick">✓</div><p>Generate FYP documentation automatically using AI.</p></div>
+        <div class="obj"><div class="tick">✓</div><p>Manage projects and meetings in one organized place.</p></div>
+        <div class="obj"><div class="tick">✓</div><p>Export professional PDF reports on demand.</p></div>
+        <div class="obj"><div class="tick">✓</div><p>Improve academic documentation workflow end-to-end.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SYSTEM ARCHITECTURE -->
+  <section>
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span>System architecture</div>
+      <h2>What happens behind the scenes.</h2>
+      <p class="lede">The system is split into two connected pipelines — one running on the student's phone, the other handling the AI processing in the background.</p>
+      <div class="arch-grid">
+        <div class="arch-col">
+          <span class="k">Mobile app pipeline</span>
+          <div class="pipe">
+            <div class="pipe-step"><span class="b"></span>Sign in (Firebase Authentication)</div>
+            <div class="pipe-step"><span class="b"></span>Record the meeting</div>
+            <div class="pipe-step"><span class="b"></span>Upload the audio</div>
+            <div class="pipe-step"><span class="b"></span>View the generated chapters</div>
+            <div class="pipe-step"><span class="b"></span>Store &amp; export as PDF (Supabase)</div>
+          </div>
+        </div>
+        <div class="arch-col ai">
+          <span class="k">AI pipeline</span>
+          <div class="pipe">
+            <div class="pipe-step"><span class="b"></span>Audio received by the backend</div>
+            <div class="pipe-step"><span class="b"></span>Transcribed with Whisper</div>
+            <div class="pipe-step"><span class="b"></span>Speakers separated</div>
+            <div class="pipe-step"><span class="b"></span>Transcript sent to Gemini</div>
+            <div class="pipe-step"><span class="b"></span>Chapters &amp; summary generated as PDF</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- METHODOLOGY -->
+  <section class="section-alt">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span>How it works</div>
+      <h2>From conversation to finished document, step by step.</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="numc">01</div>
+          <h3>Hit record</h3>
+          <p>Open the app on your phone during a supervisor meeting and record the conversation, just like a voice memo.</p>
+        </div>
+        <div class="step">
+          <div class="numc">02</div>
+          <h3>Echo Notes listens and writes it down</h3>
+          <p>The recording is automatically converted into text using Whisper, an AI speech-recognition model — no manual typing required.</p>
+        </div>
+        <div class="step">
+          <div class="numc">03</div>
+          <h3>It figures out who said what</h3>
+          <p>The system separates the conversation by speaker, so the transcript clearly shows what the student said versus what the supervisor said.</p>
+        </div>
+        <div class="step">
+          <div class="numc">04</div>
+          <h3>It drafts the academic document for you</h3>
+          <p>Using that transcript, Gemini generates a structured first draft — such as a literature review, methodology section, or updated proposal — ready to review and export as a PDF.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section>
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span>Results &amp; features</div>
+      <h2>Everything a research meeting needs, handled automatically.</h2>
+    </div>
+    <div class="feature-grid">
+      <div class="feature"><div class="mark">①</div><h3>Automatic transcription</h3><p>Converts recorded meetings into accurate written text, so nobody has to type notes by hand.</p></div>
+      <div class="feature"><div class="mark">②</div><h3>Speaker identification</h3><p>Tells apart different voices in the recording, labelling who said what throughout the discussion.</p></div>
+      <div class="feature"><div class="mark">③</div><h3>AI-written first drafts</h3><p>Generates academic sections — like literature reviews and action items — directly from the meeting transcript.</p></div>
+      <div class="feature"><div class="mark">④</div><h3>Project management</h3><p>Every recording and document is filed under its own project, so nothing gets lost across a semester.</p></div>
+      <div class="feature"><div class="mark">⑤</div><h3>One-tap PDF export</h3><p>Turns any transcript or generated document into a clean, shareable PDF, ready to submit.</p></div>
+      <div class="feature"><div class="mark">⑥</div><h3>Secure, role-based access</h3><p>Students, supervisors, and administrators each see only what's relevant to them, kept behind secure sign-in.</p></div>
+    </div>
+  </section>
+
+  <!-- APPLICATION MODULES / AUDIENCE -->
+  <section class="section-alt">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span>Application modules</div>
+      <h2>Built for everyone in the meeting.</h2>
+      <div class="audience-grid">
+        <div class="audience-card">
+          <h3>Student</h3>
+          <p>Record sessions, track every project in one dashboard, and jump straight from a transcript to a drafted chapter.</p>
+          <ul><li>Dashboard &amp; sessions</li><li>Recording &amp; upload</li><li>Document generation</li></ul>
+        </div>
+        <div class="audience-card">
+          <h3>Supervisor</h3>
+          <p>Review transcripts from every assigned student, correct speaker names, and generate documents when needed.</p>
+          <ul><li>Student &amp; project list</li><li>Transcript review</li><li>Document generation</li></ul>
+        </div>
+        <div class="audience-card">
+          <h3>Administrator</h3>
+          <p>Oversee every user and project university-wide, manage evaluation committees, and configure the system.</p>
+          <ul><li>User management</li><li>Committee &amp; voting records</li><li>System settings</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECHNOLOGIES -->
+  <section>
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span>Technologies</div>
+      <h2>A modern, zero-cost technology stack.</h2>
+      <p class="lede">Echo Notes runs entirely on free and open-source tools, keeping the system practical to deploy for any university.</p>
+      <div class="stack-row">
+        <div class="chip"><b>Flutter</b> — mobile app</div>
+        <div class="chip"><b>Dart</b> — app language</div>
+        <div class="chip"><b>Python</b> — backend language</div>
+        <div class="chip"><b>FastAPI</b> — backend service</div>
+        <div class="chip"><b>Whisper</b> — speech-to-text</div>
+        <div class="chip"><b>Gemini API</b> — document generation</div>
+        <div class="chip"><b>Firebase Auth</b> — sign-in &amp; roles</div>
+        <div class="chip"><b>Supabase</b> — database &amp; storage</div>
+        <div class="chip"><b>REST API</b> — app ↔ backend</div>
+        <div class="chip"><b>PDF export</b> — shareable output</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SYSTEM REQUIREMENTS -->
+  <section class="section-alt">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span>System specification</div>
+      <h2>What it takes to run.</h2>
+      <div class="req-grid">
+        <div class="req-col">
+          <span class="k">Hardware</span>
+          <ul>
+            <li><b>Processor:</b> Intel i5 or better</li>
+            <li><b>Memory:</b> 8GB RAM minimum</li>
+            <li><b>Storage:</b> 250GB SSD recommended</li>
+            <li><b>Extras:</b> Microphone, Android device</li>
+          </ul>
+        </div>
+        <div class="req-col">
+          <span class="k">Software</span>
+          <ul>
+            <li><b>Frameworks:</b> Flutter, FastAPI</li>
+            <li><b>Languages:</b> Python, Dart</li>
+            <li><b>AI models:</b> Whisper, Gemini API</li>
+            <li><b>Tooling:</b> VS Code, Android Studio, Supabase</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADVANTAGES / FUTURE WORK -->
+  <section>
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span>Advantages &amp; what's next</div>
+      <h2>Why it helps, and where it's headed.</h2>
+      <div class="two-col">
+        <div>
+          <h3>Advantages</h3>
+          <ul class="adv">
+            <li>Eliminates manual documentation work</li>
+            <li>Reduces overall student and supervisor workload</li>
+            <li>Speeds up meeting documentation significantly</li>
+            <li>High transcription accuracy across accents</li>
+            <li>AI-assisted academic writing support</li>
+            <li>Organized, searchable academic records</li>
+            <li>Secure cloud storage for every session</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Future work</h3>
+          <ul class="fut">
+            <li>Real-time transcription during meetings</li>
+            <li>Multi-language support</li>
+            <li>Offline AI processing</li>
+            <li>Video meeting integration</li>
+            <li>LMS (learning management system) integration</li>
+            <li>RAG-based document generation</li>
+            <li>Improved speaker recognition</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONCLUSION -->
+  <section class="section-alt">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span>Conclusion</div>
+      <h2>The takeaway.</h2>
+      <div class="conclusion-box">
+        <p>Echo Notes provides an intelligent academic meeting assistant that combines speech recognition, AI-powered document generation, and project management into one platform — significantly improving documentation efficiency, accuracy, and collaboration for students and supervisors alike.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSER -->
+  <div class="closer">
+    <div class="name">Muhammad Abdullah</div>
+    <div class="role">Echo Notes · Final Year Thesis · Hazara University, Mansehra</div>
+    <div class="sup">Supervised by Dr. Ibrar Afzal · 2026</div>
+  </div>
+
+<script>
+(function(){
+  const svg = document.getElementById('wavesvg');
+  const ns = 'http://www.w3.org/2000/svg';
+  const h = 90, mid = h/2;
+  const barCount = 46;
+  const barW = 14, gap = 8.6;
+
+  const defs = document.createElementNS(ns,'defs');
+  const grad = document.createElementNS(ns,'linearGradient');
+  grad.setAttribute('id','barGrad'); grad.setAttribute('x1','0%'); grad.setAttribute('x2','100%');
+  [[0,'#6FC7C3'],[55,'#8FBFA9'],[100,'#D4A24C']].forEach(([off,col])=>{
+    const s = document.createElementNS(ns,'stop');
+    s.setAttribute('offset', off+'%'); s.setAttribute('stop-color', col);
+    grad.appendChild(s);
+  });
+  defs.appendChild(grad);
+  svg.appendChild(defs);
+
+  for(let i=0;i<barCount;i++){
+    const t = i/(barCount-1);
+    const decay = Math.max(0.08, 1 - Math.pow(t,1.6)*0.94);
+    const amp = (32*Math.abs(Math.sin(i*0.85)) + 8) * decay;
+    const barH = Math.max(4, amp);
+    const x = i*(barW+gap);
+    const rect = document.createElementNS(ns,'rect');
+    rect.setAttribute('x', x.toFixed(1));
+    rect.setAttribute('y', (mid - barH/2).toFixed(1));
+    rect.setAttribute('width', barW);
+    rect.setAttribute('height', barH.toFixed(1));
+    rect.setAttribute('rx', barW/2);
+    rect.setAttribute('fill', 'url(#barGrad)');
+    rect.setAttribute('opacity', (0.55 + 0.45*(1-t)).toFixed(2));
+    svg.appendChild(rect);
+  }
+
+  const lineDefs = [
+    {yFrac:0.28, len:170, op:0.9},
+    {yFrac:0.52, len:130, op:0.75},
+    {yFrac:0.76, len:150, op:0.6}
+  ];
+  const startX = barCount*(barW+gap) + 26;
+  lineDefs.forEach(d=>{
+    const line = document.createElementNS(ns,'rect');
+    line.setAttribute('x', startX);
+    line.setAttribute('y', (h*d.yFrac).toFixed(1));
+    line.setAttribute('width', d.len);
+    line.setAttribute('height', 3.4);
+    line.setAttribute('rx', 1.7);
+    line.setAttribute('fill', '#D4A24C');
+    line.setAttribute('opacity', d.op);
+    svg.appendChild(line);
+  });
+})();
+</script>
+</body>
+</html>
